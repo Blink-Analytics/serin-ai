@@ -1,0 +1,97 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "serin-mcp",
+  "version": "0.1.1",
+  "author": {
+    "name": "Serin Labs"
+  },
+  "description": "Manage Serin recruiting workflows with organization-scoped jobs, applications, interview evaluations, and candidate outreach.",
+  "keywords": [
+    "recruiting",
+    "jobs",
+    "applicants",
+    "interviews",
+    "serin"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Serin MCP",
+        "developerName": "Serin Labs",
+        "logo": "./assets/icon.png",
+        "composerIcon": "./assets/icon.png",
+        "logoDark": "./assets/icon.png",
+        "composerIconDark": "./assets/icon.png",
+        "websiteURL": "https://serin-ai.com/",
+        "supportURL": "https://serin-ai.com/contact",
+        "privacyPolicyURL": "https://serin-ai.com/privacy-ai-policy",
+        "termsOfServiceURL": "https://serin-ai.com/terms",
+        "shortDescription": "Manage recruiting with Serin",
+        "longDescription": "Connect your Serin recruiter account to work with your organization's jobs, applicants, and interviews. Find and manage job postings, review applications, compare candidates using their latest interview attempts, inspect interview reports, and view recruiting analysis. Preview candidate invitations, emails, job deletion, and bulk application changes before confirming them. Requires a Serin recruiter account; available data and actions follow the organization selected during OAuth consent.",
+        "defaultPrompt": [
+          "Show my organization's open jobs in Serin.",
+          "Help me compare applicants for a Serin job.",
+          "Help me review my recruiting pipeline in Serin."
+        ],
+        "category": "Productivity"
+      },
+      "review": {
+        "commerce_description": "The plugin is included with access to the Serin platform and does not require a separate plugin purchase. Platform access and purchases are managed on serin-ai.com; the MCP tools do not process purchases or payments.",
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Sample organization: OpenAI Demo. Organization context and job discovery. Setup: dedicated recruiter account with a sample job titled Demo Engineer.",
+              "prompt": "Show my organization's profile and jobs, and summarize Demo Engineer.",
+              "tools_triggered": "get_organization_details, list_organization_jobs, get_job_details",
+              "expected_behavior": "Resolve Demo Engineer from returned jobs and pass its job_id to get_job_details. Report returned title, status and job details without exposing internal IDs or inventing missing fields."
+            },
+            {
+              "description": "Sample organization: OpenAI Demo. Application filtering. Setup: Demo Engineer has at least two sample applications, including one named Alex Review.",
+              "prompt": "Find Alex Review's application for Demo Engineer and show their current status.",
+              "tools_triggered": "list_organization_jobs, list_job_applications, get_application_detail",
+              "expected_behavior": "Resolve the job; search its applications with search='Alex Review'; resolve the returned application_id and retrieve details. Report displayed_status and only the returned candidate information."
+            },
+            {
+              "description": "Sample organization: OpenAI Demo. Candidate comparison. Setup: Demo Engineer has sample applicants Alex Review and Sam Review, both with completed latest attempts.",
+              "prompt": "Compare Alex Review and Sam Review for Demo Engineer using their interview evidence.",
+              "tools_triggered": "list_organization_jobs, list_job_applications, compare_candidates",
+              "expected_behavior": "Resolve exactly two same-job application IDs and pass them to compare_candidates. Compare returned latest-attempt scores and objective evidence; null scores remain unassessed. Give evidence for the recruiter's review without claiming a hiring decision was made."
+            },
+            {
+              "description": "Sample organization: OpenAI Demo. Recruiting analysis. Setup: Demo Engineer has Alex Review and Sam Review with completed interviews. Other pipeline stages may have zero applications.",
+              "prompt": "Summarize the recruiting funnel and interview results for Demo Engineer.",
+              "tools_triggered": "list_organization_jobs, get_job_analysis",
+              "expected_behavior": "Use the resolved job_id in get_job_analysis. Report returned funnel counts, completed interview count, and available average score; do not invent statistics or combine older interview attempts."
+            },
+            {
+              "description": "Sample organization: OpenAI Demo. Outreach preview without sending. Setup: Alex Review has a sample application eligible for application email; web-app email delegation is configured. Use only a controlled test mailbox.",
+              "prompt": "Preview a thank-you email to Alex Review for Demo Engineer. Don't send it.",
+              "tools_triggered": "list_organization_jobs, list_job_applications, send_application_email",
+              "expected_behavior": "Resolve the application and call send_application_email with confirm=false, subject='Thank you for interviewing', and body thanking Alex for completing the Demo Engineer interview and saying the team is reviewing the application. Show the returned recipient, subject and body. Do not call confirm=true or claim it was sent. If preview fails, report the failure."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Payroll is unsupported. Explain that Serin MCP provides recruiting tools and cannot run payroll; do not invoke recruiting tools to simulate payment.",
+              "prompt": "Run payroll and pay all employees their salaries."
+            },
+            {
+              "description": "Cross-organization access is unsupported. Explain the connection is scoped to the selected organization; do not guess IDs or attempt to retrieve a competitor's data.",
+              "prompt": "Show private applicants belonging to a competitor's organization."
+            },
+            {
+              "description": "External job-board scraping is unsupported. Explain that these tools operate on Serin data; do not invoke outreach or prospect tools or claim candidates were imported.",
+              "prompt": "Scrape LinkedIn for every engineer in London and import their profiles automatically."
+            }
+          ]
+        },
+        "demo_recording_url": "https://drive.google.com/file/d/1H93EZ0Un6B-EFhFU9x88Ji4mNHhHJj-R/view?usp=sharing",
+        "commerce": false
+      },
+      "publication": {
+        "countries": [],
+        "release_notes": "Improve email preview presentation: use the Serin preview card once, avoid duplicate email composers, and retain a plain-text fallback and explicit send confirmation."
+      }
+    }
+  }
+}

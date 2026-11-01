@@ -1,0 +1,17 @@
+{
+  "name": "serin-mcp",
+  "displayName": "Serin MCP",
+  "version": "0.1.1",
+  "description": "Manage Serin recruiting workflows with organization-scoped jobs, applications, interview evaluations, and candidate outreach.",
+  "author": {
+    "name": "Serin Labs",
+    "url": "https://serin-ai.com/"
+  },
+  "homepage": "https://serin-ai.com/",
+  "repository": "https://github.com/Blink-Analytics/serin-ai",
+  "supportUrl": "https://serin-ai.com/contact",
+  "privacyPolicyUrl": "https://serin-ai.com/privacy-ai-policy",
+  "termsOfServiceUrl": "https://serin-ai.com/terms",
+  "icon": "./assets/icon.png",
+  "keywords": ["recruiting", "jobs", "applicants", "interviews", "serin"]
+}
