@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "serin": {
+      "type": "http",
+      "url": "https://mcp.serin-ai.com/mcp"
+    }
+  }
+}

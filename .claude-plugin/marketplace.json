@@ -1,0 +1,16 @@
+{
+  "name": "serin-labs",
+  "owner": {
+    "name": "Serin Labs"
+  },
+  "metadata": {
+    "description": "Serin recruiting integrations for AI agents."
+  },
+  "plugins": [
+    {
+      "name": "serin-mcp",
+      "source": "./",
+      "description": "Manage Serin recruiting workflows: jobs, applications, interview evaluations and candidate outreach."
+    }
+  ]
+}
