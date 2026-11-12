@@ -30,13 +30,27 @@ Then run `/mcp`, select **serin** and choose **Authenticate**.
 
 ### Codex / ChatGPT (OpenAI)
 
-The OpenAI package lives in `openai/`. Build the upload archive with:
+**Codex CLI**
 
-```bash
-python scripts/build_openai_zip.py   # -> dist/serin-mcp-<version>.zip
-```
+1. Add the server and sign in:
 
-`openai/README.md` lists the remaining portal steps for submitting it.
+   ```bash
+   codex mcp add serin --url https://mcp.serin-ai.com/mcp
+   codex mcp login serin
+   ```
+
+2. Install the skills:
+
+   ```bash
+   npx skills add Blink-Analytics/serin-ai
+   ```
+
+**ChatGPT**
+
+Add Serin as a custom MCP connector (in **Plugins → Add → Add custom MCP server**). Use
+`https://mcp.serin-ai.com/mcp` as the server URL and choose OAuth when
+asked how to authenticate. Sign in with your Serin recruiter account when
+prompted.
 
 ### OpenCode
 
