@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "serin-mcp",
-  "version": "0.1.1",
+  "version": "1.0.1",
   "author": {
     "name": "Serin Labs"
   },
@@ -16,7 +16,7 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "Serin MCP",
+        "displayName": "Serin AI",
         "developerName": "Serin Labs",
         "logo": "./assets/icon.png",
         "composerIcon": "./assets/icon.png",
@@ -26,14 +26,15 @@
         "supportURL": "https://serin-ai.com/contact",
         "privacyPolicyURL": "https://serin-ai.com/privacy-ai-policy",
         "termsOfServiceURL": "https://serin-ai.com/terms",
-        "shortDescription": "Manage recruiting with Serin",
-        "longDescription": "Connect your Serin recruiter account to work with your organization's jobs, applicants, and interviews. Find and manage job postings, review applications, compare candidates using their latest interview attempts, inspect interview reports, and view recruiting analysis. Preview candidate invitations, emails, job deletion, and bulk application changes before confirming them. Requires a Serin recruiter account; available data and actions follow the organization selected during OAuth consent.",
+        "shortDescription": "Manage jobs and applicants",
+        "longDescription": "Serin is an AI interviewing and recruiting platform. This plugin lets recruiters and hiring teams manage recruiting operations for their organization. Find, create, and update job postings and your organization profile; review applications and organize them with your organization's labels; compare candidates using returned interview evidence; inspect interview reports; and summarize the recruiting pipeline. Add sourced prospects with their resumes, schedule meetings with candidates, and preview candidate invitations, emails, job deletion, and bulk application changes before confirming them. Interview assessments support human review; hiring decisions remain with the recruiter. Requires a Serin recruiter account. Access is limited to the organization selected during sign-in and consent. Requested recruiting data is returned to ChatGPT or Codex to answer your request.",
         "defaultPrompt": [
           "Show my organization's open jobs in Serin.",
-          "Help me compare applicants for a Serin job.",
-          "Help me review my recruiting pipeline in Serin."
+          "Help me compare applicants for my job in Serin.",
+          "Show me the interview report of the top candidate for my job in Serin."
         ],
-        "category": "Productivity"
+        "capabilities": ["Interactive", "Read", "Write"],
+        "category": "Business & Operations"
       },
       "review": {
         "commerce_description": "The plugin is included with access to the Serin platform and does not require a separate plugin purchase. Platform access and purchases are managed on serin-ai.com; the MCP tools do not process purchases or payments.",
@@ -67,12 +68,12 @@
               "description": "Sample organization: OpenAI Demo. Outreach preview without sending. Setup: Alex Review has a sample application eligible for application email; web-app email delegation is configured. Use only a controlled test mailbox.",
               "prompt": "Preview a thank-you email to Alex Review for Demo Engineer. Don't send it.",
               "tools_triggered": "list_organization_jobs, list_job_applications, send_application_email",
-              "expected_behavior": "Resolve the application and call send_application_email with confirm=false, subject='Thank you for interviewing', and body thanking Alex for completing the Demo Engineer interview and saying the team is reviewing the application. Show the returned recipient, subject and body. Do not call confirm=true or claim it was sent. If preview fails, report the failure."
+              "expected_behavior": "Resolve the application and call send_application_email with confirm=false, subject='Thank you for interviewing', and body thanking Alex for completing the Demo Engineer interview and saying the team is reviewing the application. Show the returned recipient, subject and body once in the Serin preview card, with only a short acknowledgement in chat. If no card is available, show the exact preview once as plain text. Do not create a second email composer, call confirm=true, or claim it was sent. If preview fails, report the failure."
             }
           ],
           "negative": [
             {
-              "description": "Payroll is unsupported. Explain that Serin MCP provides recruiting tools and cannot run payroll; do not invoke recruiting tools to simulate payment.",
+              "description": "Payroll is unsupported. Explain that Serin provides recruiting tools and cannot run payroll; do not invoke recruiting tools to simulate payment.",
               "prompt": "Run payroll and pay all employees their salaries."
             },
             {
@@ -90,7 +91,7 @@
       },
       "publication": {
         "countries": [],
-        "release_notes": "Improve email preview presentation: use the Serin preview card once, avoid duplicate email composers, and retain a plain-text fallback and explicit send confirmation."
+        "release_notes": "Version 1.0.1. New: manage your organization's application labels (list, create, rename, recolor, and delete with a preview showing how many applications use each label), and when inviting a candidate or adding a prospect the assistant now asks whether to add labels; recruiters can always decline. The recruiting listing, category, privacy policy (v1.6.1, Section 7A) and organization-scoped access are unchanged."
       }
     }
   }
