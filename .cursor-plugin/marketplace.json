@@ -1,0 +1,14 @@
+{
+  "name": "serin-labs",
+  "owner": {
+    "name": "Serin Labs"
+  },
+  "plugins": [
+    {
+      "name": "serin-mcp",
+      "source": "./",
+      "description": "Manage Serin recruiting workflows: jobs, applications, interview evaluations and candidate outreach.",
+      "category": "productivity"
+    }
+  ]
+}

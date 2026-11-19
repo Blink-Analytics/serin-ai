@@ -1,11 +1,11 @@
 ---
 name: serin-evaluations
-description: "Serin MCP evaluations module: how interview scores, integrity and attempts work, plus interview session reports, recording links and job analysis"
+description: "Serin evaluations module: how interview scores, integrity and attempts work, plus interview session reports, recording links and job analysis"
 ---
 
-# Serin MCP: interview evaluations
+# Serin: interview evaluations
 
-Part of the Serin MCP skills - start from `../using-serin-mcp/SKILL.md` for authentication, the rules every tool follows and the other modules.
+Part of the Serin skills - start from `../using-serin-mcp/SKILL.md` for authentication, the rules every tool follows and the other modules.
 
 Tools: `get_interview_session`, `get_interview_recording`, `get_job_analysis`.
 Evaluations also appear on every application (`list_job_applications`,

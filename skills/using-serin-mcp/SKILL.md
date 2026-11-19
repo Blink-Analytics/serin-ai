@@ -1,11 +1,11 @@
 ---
 name: using-serin-mcp
-description: Start here for the Serin MCP server - authentication, the rules every tool follows, and which module skill (jobs, applications, evaluations, candidate outreach) to read before using a tool
+description: Start here for Serin - authentication, the rules every tool follows, and which module skill (jobs, applications, evaluations, candidate outreach) to read before using a tool
 ---
 
-# Using Serin MCP
+# Using Serin
 
-Serin MCP exposes org-side recruiting tools for the Serin platform: job posting
+Serin exposes org-side recruiting tools for the Serin platform: job posting
 management, applicant review, interview analysis, and the application
 pipeline. Every tool call is scoped to the caller's own organization - there
 is no way to read or write another org's data.
@@ -16,10 +16,10 @@ resources so you only load what you need):
 
 | Module | Read it for | Tools |
 |---|---|---|
-| `../serin-jobs/SKILL.md` | Posting, editing and removing jobs; writing interview objectives | `get_organization_details`, `search_locations`, `list_organization_jobs`, `get_job_details`, `create_job`, `update_job`, `delete_job` |
-| `../serin-applications/SKILL.md` | Reviewing applicants, changing status/labels/deadlines, acting on many at once | `list_job_applications`, `get_application_detail`, `compare_candidates`, `update_application`, `bulk_update_application_status`, `bulk_update_application_labels`, `bulk_update_application_deadline` |
+| `../serin-jobs/SKILL.md` | Posting, editing and removing jobs; generating interview objectives; the organization profile | `get_organization_details`, `update_organization_details`, `search_locations`, `list_organization_jobs`, `get_job_details`, `create_job`, `update_job`, `delete_job` |
+| `../serin-applications/SKILL.md` | Reviewing applicants, changing status/labels/deadlines, acting on many at once, managing the organization's application labels | `list_job_applications`, `get_application_detail`, `compare_candidates`, `update_application`, `bulk_update_application_status`, `bulk_update_application_labels`, `bulk_update_application_deadline`, `list_organization_labels`, `update_organization_labels`, `delete_organization_labels` |
 | `../serin-evaluations/SKILL.md` | What a score, band and integrity tier mean; interview reports, recordings, job analysis | `get_interview_session`, `get_interview_recording`, `get_job_analysis` |
-| `../serin-candidate-outreach/SKILL.md` | Inviting and emailing candidates, redo invitations, sourced prospects | `invite_candidate`, `send_application_email`, `redo_interview`, `request_resume_upload`, `add_prospect`, `screen_prospect_resume`, `invite_prospect` |
+| `../serin-candidate-outreach/SKILL.md` | Inviting and emailing candidates, redo invitations, meetings with candidates, sourced prospects | `invite_candidate`, `send_application_email`, `redo_interview`, `schedule_meeting`, `request_resume_upload` (upload card, link only as fallback), `upload_resume_file` (called by the upload card only), `add_prospect`, `screen_prospect_resume`, `invite_prospect` |
 
 Which flows span modules:
 
@@ -69,6 +69,15 @@ for the next tool call.
   success.
 - **Don't invent.** Fields an organization or candidate hasn't filled in are
   null; say so rather than guessing.
+- **"Add" or "invite" someone means `invite_candidate`.** Then offer, in a
+  P.S., to add them as a prospect instead (`add_prospect`: resume on file, no
+  email yet). See the candidate outreach module.
+- **Ask about labels for every new application.** Before confirming
+  `invite_candidate` or `add_prospect`, ask the recruiter whether to add labels
+  (from `list_organization_labels`); they may say no (`label_ids=[]`). Labels
+  are always catalog `id`s, never free text.
+- **Previews are shown once.** Where the client shows Serin's preview card, the
+  card is the preview; don't repeat its email in chat.
 
 ## Errors that apply everywhere
 

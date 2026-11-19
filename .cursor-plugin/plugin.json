@@ -1,0 +1,14 @@
+{
+  "name": "serin-ai",
+  "displayName": "Serin AI",
+  "version": "1.0.1",
+  "description": "Manage Serin recruiting workflows with organization-scoped jobs, applications, interview evaluations, and candidate outreach. Runs on the hosted Serin MCP server with browser sign-in, no API key to paste.",
+  "author": {
+    "name": "Serin Labs",
+    "url": "https://serin-ai.com/"
+  },
+  "homepage": "https://serin-ai.com/",
+  "repository": "https://github.com/Blink-Analytics/serin-ai",
+  "keywords": ["recruiting", "jobs", "applicants", "interviews", "serin", "mcp"],
+  "logo": "assets/icon.png"
+}

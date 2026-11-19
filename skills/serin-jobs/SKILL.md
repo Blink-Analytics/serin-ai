@@ -1,24 +1,39 @@
 ---
 name: serin-jobs
-description: "Serin MCP jobs module: organization profile, location search, and listing, reading, creating, editing and deleting job postings (including how to write interview objectives)"
+description: "Serin jobs module: organization profile, location search, and listing, reading, creating, editing and deleting job postings (including how to write interview objectives)"
 ---
 
-# Serin MCP: jobs
+# Serin: jobs
 
-Part of the Serin MCP skills - start from `../using-serin-mcp/SKILL.md` for authentication, the rules every tool follows and the other modules.
+Part of the Serin skills - start from `../using-serin-mcp/SKILL.md` for authentication, the rules every tool follows and the other modules.
 
-Tools: `get_organization_details`, `search_locations`, `list_organization_jobs`,
-`get_job_details`, `create_job`, `update_job`, `delete_job`.
+Tools: `get_organization_details`, `update_organization_details`,
+`search_locations`, `list_organization_jobs`, `get_job_details`, `create_job`,
+`update_job`, `delete_job`.
 
 ## Tools
 
 ### Organization context and places
 
 - **`get_organization_details()`** — the caller's organization profile: name,
-  description, website, address, domains, team size, type, founding year.
-  Fields the org hasn't filled in are null — don't invent them. Also `labels`:
-  the org's application-label catalog (`{id, name}`); the `id` slugs are what
-  `label_ids` takes on the application tools.
+  description, website, email, phone, address, domains, team size, type,
+  founding year. Fields the org hasn't filled in are null — don't invent them.
+  Also `labels`: the org's application-label catalog (`{id, name, color}`); the
+  `id`s are what `label_ids` takes on the application tools. To read or change
+  just the labels use `list_organization_labels` /
+  `update_organization_labels` / `delete_organization_labels` (applications
+  module).
+- **`update_organization_details(org_name=None, description=None, website=None, email=None, phone=None, address=None, org_type=None, founded=None, team_size=None, work_domains=None)`**
+  — edits the organization profile, the same fields as the website's
+  organization settings. The profile is public (it appears on the org's job
+  pages). Only what you pass changes; `""` clears an optional text field
+  (`org_name` can't be cleared). `website` needs `https://`; `phone` is
+  international format (`+14155550100`); `founded` is 1800 to this year;
+  `team_size` is one of `1-10`, `11-50`, `51-200`, `201-500`, `500+`;
+  `work_domains` is up to 2 of Engineering, Robotics, Design, Sales, Marketing,
+  Ops, Finance, HR, Legal (replaces the list). Only the org's owner or an
+  admin/manager may edit. **Show the recruiter the change (old → new) and save
+  only after they agree**; write only facts the recruiter gave or confirmed.
 - **`search_locations(query)`** — Google Places city search. Returns
   `{place_id, description}` candidates. A job's city and country are resolved
   from a `place_id` on the server, so they are always real; never make up a
@@ -74,10 +89,15 @@ Tools: `get_organization_details`, `search_locations`, `list_organization_jobs`,
   - `interview_duration` — minutes, 10-60.
   - `objectives` — exactly **5** `{objective, importance 0-10, difficulty
     0-10}` items (**3** when `interview_duration` is under 20), most critical
-    first. These are what the AI interviewer assesses. **Review them with the
-    recruiter before saving** (see "Writing interview objectives"); the call is
-    rejected unless `objectives_approved=true`, which you may only set after
-    the recruiter has confirmed. Required to publish.
+    first. These are what the AI interviewer assesses. Generate them with
+    "Generating interview objectives" below and **review them with the
+    recruiter before saving**; the call is rejected unless
+    `objectives_approved=true`, which you may only set after the recruiter has
+    confirmed. Required to publish.
+  - `job_visibility` — `Public` (default; anyone with the job link can apply)
+    or `Private` (only candidates you invite, and the organization's members,
+    can open it; pre-application answers never auto-reject). **Ask the
+    recruiter** - don't silently keep the default.
   - `interview_custom_questions` — optional `{question, evaluationHints,
     difficulty, importance}` items Serin asks live. Limit by duration: 3 (up to
     20 min), 6 (up to 40), 9 (up to 60). Weak prompts such as a bare topic are
@@ -132,47 +152,115 @@ Tools: `get_organization_details`, `search_locations`, `list_organization_jobs`,
    `growth_opportunities` from the real profile; leave them empty if the org
    hasn't provided one rather than guessing.
 2. Draft `details` from the recruiter's posting. Ask about anything essential
-   the posting doesn't say (employment type, location, salary) instead of
-   assuming.
+   the posting doesn't say (employment type, location, salary, interview duration, 
+   job domain, experience in years) instead of assuming — and **ask whether the job 
+   is Public or Private** (see `job_visibility` above).
 3. ONSITE/HYBRID: `search_locations(query)`, confirm the city with the
    recruiter when several match, and put the chosen `place_id` in
    `details.location`.
-4. Propose the interview objectives (below), discuss and adjust them with the
-   recruiter, and only then pass them with `objectives_approved=true`.
+4. Generate the interview objectives with "Generating interview objectives"
+   (below), show them, swap in alternatives or adjust as the recruiter asks,
+   and only then pass the final set with `objectives_approved=true`.
 5. `create_job(...)` as a draft first so the recruiter can review it; when they
    are happy, `update_job(job_id, job_status="published",
    application_deadline_at=...)` (or create it published directly).
+
+**Edit the organization profile:**
+1. `get_organization_details()`.
+2. Show the recruiter each field you would change, old → new.
+3. Only after a yes: `update_organization_details(...)` with only those fields.
 
 **Edit a job:**
 1. `get_job_details(job_id)`.
 2. `update_job(job_id, ...)` with only the changed parts.
 
-## Writing interview objectives
+## Generating interview objectives
 
-Objectives are the competencies the AI interviewer will assess in the live
-interview, so they must be things a candidate can demonstrate in the interview's
-duration. Propose them, show them to the recruiter with their scores, ask
-whether to keep or change any, and apply their edits before saving.
+Objectives are the competencies the AI interviewer assesses in the live
+interview. On the Serin website they are generated by a fixed prompt; over MCP
+**you** generate them, so follow that same procedure exactly (it is the
+website's `generate-objectives` prompt, restated) to get the same kind of result
+a recruiter would get on the website. Work through it silently and show only
+the result.
 
-- **Exactly 5** (3 for interviews under 20 minutes), ranked by how strongly
-  they predict success in the role: the first is the most critical area.
-- Cover nearly everything the posting demands with as little overlap as
-  possible — if two would lead to similar interview questions, merge or
-  rewrite one.
-- Concise (5-10 words): *competency + desired outcome or seniority signal*
-  (e.g. "Designs fault-tolerant services that scale under load"). Synthesize —
-  don't copy-paste posting phrases — and don't name the job domain.
-- Calibrate to seniority (`experience_years`): juniors → tool proficiency,
-  fundamentals, execution accuracy; seniors → architectural judgment,
-  trade-offs, mentoring, scalability, reliability.
-- **importance** 0-10 (business value): 9-10 deal-breaker (the core reason the
-  role exists), 7-8.5 must-have, 4-6.5 expected baseline, 1-3.5 nice-to-have.
-  Make exactly one objective 9+ and at least one 3 or below; spread the scores
-  by at least 6 points; scores must reflect each objective's real value, not
-  its position in the list.
-- **difficulty** 0-10 (how hard it is to assess): 8.5-10 rare expertise
-  (7-10+ years), 5-8 intermediate to advanced (3-6 years), 1-4.5 routine or
-  foundational.
+**Act as** a lead talent architect and brutally honest technical hiring manager
+with 15+ years of experience, turning the job description into high-signal
+interview objectives scored on real business impact and technical complexity.
+
+**Inputs** - the job title and description, plus, when known (they are
+authoritative over anything the description implies):
+- `job_domains`: background only, to help choose which competencies to assess.
+  Never write these words, or synonyms of them, in an objective.
+- `experience_years`: 0-2 → junior (tool proficiency, fundamentals, execution
+  accuracy); 3-6 → intermediate to advanced (difficulty band 5.0-8.0); 7+ →
+  senior (architectural judgment, trade-offs, mentoring, scalability, system
+  reliability). Don't infer a different seniority from the description.
+- `interview_duration` (minutes, *d*; 10 if unknown) - calibrates the time
+  each objective gets (below) and how many are used: **5**, or **3** when *d*
+  is under 20.
+
+**Phase 1 - extraction and synthesis.** Identify the **5 highest-value
+assessment areas** for success in the role. For each area write **two**
+objectives:
+- **Primary (P1-P5):** more specific, deeper or niche - specialised skills,
+  technologies or advanced competencies.
+- **Alternative (A1-A5):** broader or more general, assessing the same
+  competency from a wider perspective; interchangeable with its Primary. A1 is
+  the alternative of P1, A2 of P2, and so on.
+
+Rules:
+1. **Formula:** action verb + specific competency/skill + desired outcome or
+   seniority signal, 5-10 words. Never mention the job domain, department or
+   industry (it is already on the job). Bad: "Execute targeted outbound
+   prospecting in Sales/Marketing to drive customer acquisition". Good:
+   "Execute targeted outbound prospecting to drive customer acquisition".
+2. **Maximum coverage:** together the 5 areas cover nearly all critical
+   technical, functional, domain and business expectations, stated or implied.
+3. **Minimum overlap:** a Primary and its Alternative assess the same
+   competency at different depth; different areas assess distinct
+   competencies. If two areas would lead to similar interview questions, merge
+   or rewrite them.
+4. **Synthesis:** don't copy-paste phrases from the description; combine
+   technical skills with their real business responsibilities.
+5. **Rank** the areas by how strongly they predict success: P1 is the most
+   critical, P5 the least - a short interview uses only the first 3.
+6. **Business value first:** the competencies that best predict success, not a
+   list of every technology or duty.
+7. **Seniority calibration** as above.
+8. **Interview-testable:** each must be assessable within a *d*-minute
+   interview.
+
+Before showing them, check silently: the 5 areas cover nearly the whole
+description; every Primary has exactly one Alternative assessing the same
+competency; no two areas overlap substantially; swapping a Primary for its
+Alternative changes only depth, not coverage; no objective names the domain,
+department or industry.
+
+**Phase 2 - scoring** (1.0-10.0, one decimal, e.g. 8.4), for all 10:
+- **Importance** (business value), with the interview time it deserves in a
+  *d*-minute interview:
+  - 9.0-10.0 deal-breaker, the core reason the role exists (max(2, ⌊0.35·d⌋)+
+    minutes)
+  - 7.0-8.5 must-have, critical for success (max(1, ⌊0.25·d⌋)+ minutes)
+  - 4.0-6.5 expected baseline competency (max(1, ⌊0.15·d⌋)+ minutes)
+  - 1.0-3.5 nice-to-have or peripheral
+- **Difficulty** (technical complexity): 8.5-10.0 rare expertise (7-10+ years
+  of specialisation); 5.0-8.0 intermediate to advanced (3-6 years); 1.0-4.5
+  routine or foundational.
+
+**Phase 3 - mandatory scoring rules:**
+1. Exactly **one** objective has importance 9.0-10.0, and at least **one** has
+   importance 1.0-3.0.
+2. No positional bias: don't score in ascending or descending order; each
+   score reflects that objective's own value.
+3. The highest and lowest importance differ by at least **6.0**.
+
+**Show the recruiter** the active set - P1-P5 (P1-P3 for an interview under 20
+minutes) with importance and difficulty - and list each one's Alternative as a
+swap-in, exactly as the website's objective picker does. Ask whether to keep,
+swap or change any; apply their edits (re-check the Phase 3 rules if scores
+change). Then pass **only the final active set**, most critical first, as
+`objectives` with `objectives_approved=true` (the alternatives aren't stored).
 
 ## Errors
 
@@ -182,6 +270,12 @@ whether to keep or change any, and apply their edits before saving.
   admin/manager can delete a job"` — from `delete_job`. To take a job off the
   site without losing its data, use `update_job(job_status="draft")`.
 - `"search must be at least 2 characters"` — from `list_organization_jobs`.
+- `"Not authorized: only the organization's owner or an admin/manager can edit
+  its profile"` / `"Organization name is required"` / `"Please enter a valid
+  URL (including https://)"` / `"Please enter a valid email"` / `"Enter the
+  phone number in international format ..."` / `"Founded year cannot be in the
+  future"` / `"No fields provided to update"` — from
+  `update_organization_details`.
 - `"Interview objectives must be reviewed with the recruiter first: ..."` — from
   `create_job`/`update_job` when `objectives` were sent without
   `objectives_approved=true`. Show the objectives to the recruiter, ask whether

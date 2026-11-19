@@ -77,7 +77,17 @@ prompted.
 
 3. Authenticate: `opencode mcp auth serin`
 
-### Other MCP clients (Cursor, Gemini CLI, VS Code, etc.)
+### Cursor
+
+Install the **serin-mcp** plugin from this repo (its Cursor marketplace lives in
+`.cursor-plugin/`). The plugin adds the `serin` MCP server from
+[`mcp.json`](mcp.json) and the skills under `skills/`.
+
+Then sign in to Serin when Cursor asks, or open **Customize**, find the `serin`
+MCP server and choose **Authenticate**. There is no API key to paste and
+nothing to install locally.
+
+### Other MCP clients (Gemini CLI, VS Code, etc.)
 
 Add a remote MCP server using streamable HTTP with this URL:
 
@@ -96,14 +106,7 @@ your client reads skills from.
 |---|---|
 | `skills/` | Every agent. **The single source of truth for skills** |
 | `.claude-plugin/marketplace.json`, `.claude-plugin/plugin.json`, `.mcp.json` | Claude Code |
+| `.cursor-plugin/plugin.json`, `.cursor-plugin/marketplace.json`, `mcp.json` | Cursor |
 | `openai/plugin.json`, `openai/mcp.json` | Codex / ChatGPT, packed by `scripts/build_openai_zip.py` |
 | `opencode/opencode.json` | OpenCode config snippet |
 | `assets/icon.png` | Plugin icon (Claude listing + OpenAI package) |
-
-## Maintaining
-
-- Edit skills only in `skills/`. Every agent package reads from that folder.
-- When you release, bump `version` in **both** `.claude-plugin/plugin.json` and
-  `openai/plugin.json`, then rebuild the OpenAI zip. Claude Code users only get
-  updates after the version changes.
-- Check the Claude plugin with `claude plugin validate .`.

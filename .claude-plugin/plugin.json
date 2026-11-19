@@ -1,7 +1,7 @@
 {
-  "name": "serin-mcp",
-  "displayName": "Serin MCP",
-  "version": "0.1.1",
+  "name": "serin-ai",
+  "displayName": "Serin AI",
+  "version": "1.0.1",
   "description": "Manage Serin recruiting workflows with organization-scoped jobs, applications, interview evaluations, and candidate outreach.",
   "author": {
     "name": "Serin Labs",
